@@ -1,0 +1,24 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model produto{
+  id                  Int     @id @default(autoincrement())
+  cpf_cnpj            String  @unique  
+  nome_produtor       String?
+  nome_fazenda        String?
+  cidade              String
+  estado              String
+  area_total_fazenda  Float
+  area_agricultavel   Float
+  area_vegetacao      Float
+  culturas            String[]
+}
