@@ -1,0 +1,17 @@
+[
+    {
+        "nome": "Andy",
+        "email": "dy@gmail",
+        "genero": "Mulher"
+    },
+    {
+        "nome": "Amélia",
+        "email": "melia@gmail",
+        "genero": "Mulher"
+    },
+    {
+        "nome": "Lucca",
+        "email": "lucca@gmail",
+        "genero": "Homem"
+    }
+]

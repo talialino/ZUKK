@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model produto{
+model produtor{
   id                  Int     @id @default(autoincrement())
   cpf_cnpj            String  @unique  
   nome_produtor       String?
