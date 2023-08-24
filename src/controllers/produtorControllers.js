@@ -36,7 +36,7 @@ module.exports = {
         const somaArea = area_agricultavel + area_vegetacao;
 
         if(somaArea > area_total_fazenda){
-            return res.status(404).json('Não cadastrado! Valores de áreas incorretos.');
+            return res.status(409).json('Não cadastrado! Valores de áreas incorretos.');
         }
 
         try {
@@ -59,7 +59,6 @@ module.exports = {
             console.log(error)
             return res.status(404).send('Não foi criado');
         }
-        return res;
     },
     async read(req, res) {
         try {
@@ -89,7 +88,7 @@ module.exports = {
         try {
 
             if (!cpf_cnpj) {
-                return res.status(404).json('Informe CPF ou CNPJ para alteração.');
+                return res.status(409).json('Informe CPF ou CNPJ para alteração.');
             }
 
             const produtorExiste = await prisma.produtor.findUnique({ where: { cpf_cnpj } });
@@ -127,7 +126,7 @@ module.exports = {
             const idInt = parseInt(id);
 
             if (!idInt) {
-                return res.status(404).json('Id é obrigatório');
+                return res.status(409).json('Id é obrigatório');
             }
 
             const produtorExiste = await prisma.produtor.findUnique({ where: { id: idInt } });
