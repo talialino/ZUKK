@@ -1,7 +1,6 @@
 const NodeEnvironment = require('jest-environment-node').TestEnvironment;
 const { execSync } = require('child_process');
 const { resolve } = require('path');
-const pg = require('pg');
 
 const prismaCli = './node_modules/.bin/prisma';
 

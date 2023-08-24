@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:talia123@localhost:5432/zukk"
+  url      = "DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
 }
 
 model produtor{
