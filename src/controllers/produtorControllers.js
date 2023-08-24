@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const {validarDigitos, validarCnpj, validarCpf} = require('../functions/validacaoCpfCnpj');
 
 const prisma = new PrismaClient();
 
@@ -16,18 +17,29 @@ module.exports = {
             culturas
         } = req.body;
 
+        const cpfCnpjExist = await prisma.produtor.findUnique({ where: { cpf_cnpj } });
 
+        if ((cpfCnpjExist) || (validarDigitos(cpf_cnpj))) {
+            return res.status(409).json('CPF ou CNPJ já existe ou foi digitado incorretamente!');
+        }
 
-        // const selectConflict = await readingUser.findIndex(
-        //     (position) => position.nome === nome || position.email === email
-        // );
+        if ((cpf_cnpj.length == 11) && (!validarCpf(cpf_cnpj))) {
+
+            return res.status(404).json('CPF não existe! Cadastro não realizado.');
+           
+
+        } else if ((cpf_cnpj.length) == 14 && (!validarCnpj(cpf_cnpj))) {
+
+            return res.status(404).json('CNPJ não existe! Cadastro não realizado.');
+        }
+
+        const somaArea = area_agricultavel + area_vegetacao;
+
+        if(somaArea > area_total_fazenda){
+            return res.status(404).json('Não cadastrado! Valores de áreas incorretos.');
+        }
+
         try {
-            // if (readingUser[selectConflict]) {
-            //     return res
-            //         .status(409)
-            //         .send({ Error: 'Name or Email already exist.' });
-            // }
-
             const produtor = await prisma.produtor.create({
                 data: {
                     cpf_cnpj,
@@ -45,19 +57,18 @@ module.exports = {
             return res.status(201).json(produtor);
         } catch (error) {
             console.log(error)
-            res.status(404).send('Não foi criado');
+            return res.status(404).send('Não foi criado');
         }
         return res;
     },
     async read(req, res) {
         try {
-
             const produtores = await prisma.produtor.findMany()
             return res.status(201).json(produtores);
 
         } catch (error) {
             console.log(error)
-            res.status(404).send('Vazio');
+            return res.status(404).send('Vazio');
         }
     },
     async update(req, res) {
@@ -75,24 +86,22 @@ module.exports = {
             culturas
         } = req.body;
 
-        const cpfBackup = cpf_cnpj;
-
         try {
 
-            if(!id){
-                res.status(404).json('Id é obrigatório');
+            if (!cpf_cnpj) {
+                return res.status(404).json('Informe CPF ou CNPJ para alteração.');
             }
-            
-            const produtorExiste = await prisma.produtor.findUnique({ where: { id } });
 
-            if(!produtorExiste){
-                res.status(404).json('Produtor não existe');
+            const produtorExiste = await prisma.produtor.findUnique({ where: { cpf_cnpj } });
+
+            if (!produtorExiste) {
+                return res.status(404).json('Produtor não existe');
             }
-            
+
             const produtor = await prisma.produtor.update({
-                where: { id },
+                where: { cpf_cnpj },
                 data: {
-                    cpf_cnpj,
+                    id,
                     nome_produtor,
                     nome_fazenda,
                     cidade,
@@ -102,32 +111,29 @@ module.exports = {
                     area_vegetacao,
                     culturas
                 },
-            }); 
-
-            console.log(produtor.cpf_cnpj)
+            });
 
             return res.status(201).json(produtor);
 
         } catch (error) {
             console.log(error)
-            res.status(404).send('Não atualizado');
+            return res.status(404).send('Não atualizado');
         }
     },
     async delete(req, res) {
         try {
-
             const { id } = req.params;
 
             const idInt = parseInt(id);
 
-            if(!idInt){
-                res.status(404).json('Id é obrigatório');
+            if (!idInt) {
+                return res.status(404).json('Id é obrigatório');
             }
-            
+
             const produtorExiste = await prisma.produtor.findUnique({ where: { id: idInt } });
 
-            if(!produtorExiste){
-                res.status(404).json('Produtor não existe');
+            if (!produtorExiste) {
+                return res.status(404).json('Produtor não existe');
             }
 
             await prisma.produtor.delete({ where: { id: idInt } })
@@ -135,7 +141,7 @@ module.exports = {
 
         } catch (error) {
             console.log(error)
-            res.status(404).send('Não deletado');
+            return res.status(404).send('Não deletado');
         }
     },
 
