@@ -143,6 +143,47 @@ module.exports = {
             return res.status(404).send('Não deletado');
         }
     },
-
-
+    async dashboard(req,res) {
+        try {
+            const total_fazendas = await prisma.produtor.count();
+            const total_area_fazendas = await prisma.produtor.aggregate({
+              _sum: {
+                area_total_fazenda: true,
+              },
+            });
+        
+            const estados_data = await prisma.produtor.groupBy({
+              by: ['estado'],
+              _count: {
+                estado: true,
+              },
+            });
+        
+            const culturas_data = await prisma.produtor.groupBy({
+              by: ['culturas'],
+              _count: {
+                culturas: true,
+              },
+            });
+        
+            const areaAgricultavelVegetacao = await prisma.produtor.aggregate({
+              _sum: {
+                area_agricultavel: true,
+                area_vegetacao: true,
+              },
+            });
+        
+            return res.status(200).json({
+              total_fazendas,
+              total_area_fazendas: total_area_fazendas._sum.area_total_fazenda,
+              estados_data,
+              culturas_data,
+              area_agricultavel: areaAgricultavelVegetacao._sum.area_agricultavel,
+              area_vegetacao: areaAgricultavelVegetacao._sum.area_vegetacao,
+            });
+          } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Erro ao buscar dados para o dashboard.' });
+          }
+    }
 };

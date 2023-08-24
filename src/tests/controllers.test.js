@@ -46,7 +46,7 @@ describe('método read', () => {
         expect(response.status).toBe(201);
     });
   
-  });
+});
 
 describe('método update', () => {
     it('Sucesso quando atualizar os dados de um produtor', async () => { 
@@ -76,4 +76,14 @@ describe('método delete', () => {
         expect(response.status).toBe(409);
     });
   
+});
+
+describe('método dashboard', () => {
+  it('Sucesso ao listar dashboard', async () => {  
+    const response = await request(app)
+      .get('/listarDashboard')
+
+      expect(response.status).toBe(200);
+  });
+
 });
